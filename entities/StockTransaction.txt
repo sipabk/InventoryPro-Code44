@@ -1,0 +1,95 @@
+{
+  "name": "StockTransaction",
+  "type": "object",
+  "properties": {
+    "transaction_number": {
+      "type": "string",
+      "description": "Unique transaction reference"
+    },
+    "product_id": {
+      "type": "string",
+      "description": "Reference to Product"
+    },
+    "warehouse_id": {
+      "type": "string",
+      "description": "Reference to Warehouse"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "inward",
+        "outward",
+        "transfer",
+        "adjustment",
+        "return"
+      ],
+      "description": "Transaction type"
+    },
+    "quantity": {
+      "type": "number"
+    },
+    "serial_numbers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Serial numbers of items received/dispatched"
+    },
+    "unit_cost": {
+      "type": "number"
+    },
+    "total_cost": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "USD",
+        "EUR",
+        "GBP",
+        "INR",
+        "AUD",
+        "CAD",
+        "JPY",
+        "CNY"
+      ],
+      "default": "USD"
+    },
+    "reference_number": {
+      "type": "string",
+      "description": "PO/Invoice number"
+    },
+    "supplier_id": {
+      "type": "string"
+    },
+    "transaction_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "completed",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "product_id",
+    "type",
+    "quantity"
+  ]
+}

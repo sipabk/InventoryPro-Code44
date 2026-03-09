@@ -1,0 +1,32 @@
+{
+  "name": "Category",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Category name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent category for hierarchy"
+    },
+    "color": {
+      "type": "string",
+      "description": "Display color"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

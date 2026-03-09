@@ -1,0 +1,97 @@
+{
+  "name": "Warranty",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "description": "Reference to Product"
+    },
+    "serial_number": {
+      "type": "string",
+      "description": "Product serial number"
+    },
+    "warranty_provider": {
+      "type": "string",
+      "description": "Warranty provider name"
+    },
+    "provider_contact": {
+      "type": "string"
+    },
+    "provider_email": {
+      "type": "string"
+    },
+    "provider_phone": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "duration_months": {
+      "type": "number"
+    },
+    "warranty_type": {
+      "type": "string",
+      "enum": [
+        "manufacturer",
+        "extended",
+        "third_party",
+        "in_house"
+      ],
+      "default": "manufacturer"
+    },
+    "coverage_details": {
+      "type": "string"
+    },
+    "terms_conditions": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expired",
+        "expiring_soon",
+        "claimed",
+        "void"
+      ],
+      "default": "active"
+    },
+    "claim_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "claim_date": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "document_url": {
+      "type": "string"
+    },
+    "notification_sent": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "product_id",
+    "start_date",
+    "end_date"
+  ]
+}

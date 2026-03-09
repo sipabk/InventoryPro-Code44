@@ -1,0 +1,85 @@
+{
+  "name": "StockAdjustment",
+  "type": "object",
+  "properties": {
+    "adjustment_number": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "warehouse_id": {
+      "type": "string"
+    },
+    "adjustment_type": {
+      "type": "string",
+      "enum": [
+        "stock_take",
+        "damage",
+        "loss",
+        "correction",
+        "opening_balance",
+        "closing_balance"
+      ],
+      "default": "correction"
+    },
+    "valuation_method": {
+      "type": "string",
+      "enum": [
+        "fifo",
+        "lifo",
+        "weighted_average"
+      ],
+      "default": "weighted_average"
+    },
+    "previous_quantity": {
+      "type": "number"
+    },
+    "new_quantity": {
+      "type": "number"
+    },
+    "variance": {
+      "type": "number"
+    },
+    "previous_value": {
+      "type": "number"
+    },
+    "new_value": {
+      "type": "number"
+    },
+    "value_variance": {
+      "type": "number"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "financial_year": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_approval",
+        "approved",
+        "rejected"
+      ],
+      "default": "draft"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "adjustment_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "product_id",
+    "adjustment_type"
+  ]
+}

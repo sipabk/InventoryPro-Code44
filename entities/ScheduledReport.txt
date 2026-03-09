@@ -1,0 +1,82 @@
+{
+  "name": "ScheduledReport",
+  "type": "object",
+  "properties": {
+    "report_name": {
+      "type": "string"
+    },
+    "report_type": {
+      "type": "string",
+      "enum": [
+        "stock_levels",
+        "aging_analysis",
+        "stock_movement",
+        "valuation",
+        "supplier_performance",
+        "warranty_expiry"
+      ],
+      "description": "Type of report to generate"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly",
+        "quarterly"
+      ],
+      "default": "weekly"
+    },
+    "recipients": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Email addresses"
+    },
+    "filters": {
+      "type": "object",
+      "properties": {
+        "date_from": {
+          "type": "string",
+          "format": "date"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date"
+        },
+        "warehouse_id": {
+          "type": "string"
+        },
+        "category_id": {
+          "type": "string"
+        },
+        "supplier_id": {
+          "type": "string"
+        }
+      }
+    },
+    "last_run": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "next_run": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "report_name",
+    "report_type",
+    "frequency"
+  ]
+}

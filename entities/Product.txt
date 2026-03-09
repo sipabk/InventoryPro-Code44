@@ -1,0 +1,146 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "sku": {
+      "type": "string",
+      "description": "Stock Keeping Unit - unique identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description"
+    },
+    "category_id": {
+      "type": "string",
+      "description": "Reference to Category"
+    },
+    "supplier_id": {
+      "type": "string",
+      "description": "Reference to Supplier"
+    },
+    "preferred_supplier_id": {
+      "type": "string",
+      "description": "Reference to preferred Supplier"
+    },
+    "warehouse_id": {
+      "type": "string",
+      "description": "Reference to Warehouse"
+    },
+    "unit_price": {
+      "type": "number",
+      "description": "Unit price"
+    },
+    "cost_price": {
+      "type": "number",
+      "description": "Cost price"
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD"
+    },
+    "quantity_in_stock": {
+      "type": "number",
+      "default": 0
+    },
+    "reorder_level": {
+      "type": "number",
+      "default": 10,
+      "description": "Minimum stock level before reorder alert"
+    },
+    "reorder_quantity": {
+      "type": "number",
+      "default": 50,
+      "description": "Quantity to reorder when stock is low"
+    },
+    "unit_of_measure": {
+      "type": "string",
+      "enum": [
+        "piece",
+        "kg",
+        "lb",
+        "box",
+        "carton",
+        "pallet",
+        "liter",
+        "gallon",
+        "meter",
+        "foot"
+      ],
+      "default": "piece"
+    },
+    "serial_number_tracking": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this product requires serial number tracking on stock receipt"
+    },
+    "length": {
+      "type": "number",
+      "description": "Product length"
+    },
+    "width": {
+      "type": "number",
+      "description": "Product width"
+    },
+    "height": {
+      "type": "number",
+      "description": "Product height"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Product weight"
+    },
+    "dimension_unit": {
+      "type": "string",
+      "enum": [
+        "cm",
+        "inch",
+        "meter"
+      ],
+      "default": "cm"
+    },
+    "weight_unit": {
+      "type": "string",
+      "enum": [
+        "kg",
+        "lb",
+        "g"
+      ],
+      "default": "kg"
+    },
+    "purchase_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "barcode": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "discontinued"
+      ],
+      "default": "active"
+    },
+    "tax_rate": {
+      "type": "number",
+      "default": 0
+    },
+    "custom_fields": {
+      "type": "object",
+      "description": "Dynamic custom fields"
+    }
+  },
+  "required": [
+    "sku",
+    "name"
+  ]
+}

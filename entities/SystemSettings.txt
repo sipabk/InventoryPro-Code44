@@ -1,0 +1,31 @@
+{
+  "name": "SystemSettings",
+  "type": "object",
+  "properties": {
+    "setting_key": {
+      "type": "string",
+      "description": "Unique setting identifier"
+    },
+    "setting_value": {
+      "type": "string"
+    },
+    "setting_type": {
+      "type": "string",
+      "enum": [
+        "general",
+        "financial",
+        "notification",
+        "currency",
+        "tax",
+        "backup"
+      ],
+      "default": "general"
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "setting_key"
+  ]
+}
