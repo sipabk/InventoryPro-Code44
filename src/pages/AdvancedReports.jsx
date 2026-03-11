@@ -85,4 +85,94 @@ export default function AdvancedReports() {
             </div>
             <div>
               <Label>Warehouse</Label>
- 
+              <Select value={selectedWarehouse} onValueChange={setSelectedWarehouse}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Warehouses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Warehouses</SelectItem>
+                  {warehouses.map(w => (
+                    <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Category</Label>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map(c => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="aging" className="space-y-6">
+        <TabsList className="grid grid-cols-5 w-full">
+          <TabsTrigger value="aging">Aging Analysis</TabsTrigger>
+          <TabsTrigger value="movement">Stock Movement</TabsTrigger>
+          <TabsTrigger value="valuation">Valuation</TabsTrigger>
+          <TabsTrigger value="custom">Custom Builder</TabsTrigger>
+          <TabsTrigger value="scheduled">Scheduled</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="aging">
+          <AgingAnalysisReport 
+            products={products}
+            transactions={transactions}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            warehouseId={selectedWarehouse}
+            categoryId={selectedCategory}
+            onExport={exportReport}
+          />
+        </TabsContent>
+
+        <TabsContent value="movement">
+          <StockMovementReport 
+            products={products}
+            transactions={transactions}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            warehouseId={selectedWarehouse}
+            categoryId={selectedCategory}
+            onExport={exportReport}
+          />
+        </TabsContent>
+
+        <TabsContent value="valuation">
+          <ValuationReport 
+            products={products}
+            categories={categories}
+            warehouses={warehouses}
+            warehouseId={selectedWarehouse}
+            categoryId={selectedCategory}
+            onExport={exportReport}
+          />
+        </TabsContent>
+
+        <TabsContent value="custom">
+          <CustomReportBuilder 
+            products={products}
+            categories={categories}
+            warehouses={warehouses}
+            transactions={transactions}
+            onExport={exportReport}
+          />
+        </TabsContent>
+
+        <TabsContent value="scheduled">
+          <ScheduledReportsManager />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}

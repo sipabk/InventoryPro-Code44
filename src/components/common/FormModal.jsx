@@ -34,4 +34,13 @@ export default function FormModal({
             <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
               Cancel
             </Button>
- 
+            <Button type="submit" disabled={isLoading}>
+              {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {submitLabel}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

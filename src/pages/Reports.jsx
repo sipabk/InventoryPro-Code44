@@ -85,4 +85,221 @@ export default function Reports() {
     { header: 'Stock', accessor: 'quantity_in_stock' },
     { header: 'Reorder Level', accessor: 'reorder_level' },
     { header: 'Cost', accessor: (row) => `$${(row.cost_price || 0).toFixed(2)}` },
- 
+    { header: 'Value', accessor: (row) => `$${((row.quantity_in_stock || 0) * (row.cost_price || 0)).toFixed(2)}` },
+  ];
+
+  const exportCSV = (data, filename) => {
+    if (data.length === 0) return;
+    const headers = Object.keys(data[0]).join(',');
+    const rows = data.map(row => Object.values(row).join(','));
+    const csv = [headers, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}.csv`;
+    a.click();
+  };
+
+  return (
+    <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">Reports</h1>
+          <p className="text-slate-500 mt-1">Inventory analytics and insights</p>
+        </div>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Package className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Total Products</p>
+                <p className="text-2xl font-bold">{products.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-emerald-100 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Inventory Value</p>
+                <p className="text-2xl font-bold">${totalValue.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-amber-100 rounded-lg">
+                <BarChart3 className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Retail Value</p>
+                <p className="text-2xl font-bold">${totalRetailValue.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-red-100 rounded-lg">
+                <Shield className="w-6 h-6 text-red-600" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Low Stock Items</p>
+                <p className="text-2xl font-bold">{lowStockItems.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="stock" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="stock">Stock Levels</TabsTrigger>
+          <TabsTrigger value="movement">Movement Trends</TabsTrigger>
+          <TabsTrigger value="category">By Category</TabsTrigger>
+          <TabsTrigger value="warranty">Warranties</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="stock" className="space-y-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Stock Level Analysis</CardTitle>
+              <Button variant="outline" size="sm" onClick={() => exportCSV(products, 'stock-levels')}>
+                <Download className="w-4 h-4 mr-2" /> Export
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={stockLevelData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="stock" fill="#3b82f6" name="Current Stock" />
+                    <Bar dataKey="reorder" fill="#f59e0b" name="Reorder Level" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Low Stock Items</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable 
+                data={lowStockItems} 
+                columns={stockColumns} 
+                emptyMessage="No low stock items"
+                pageSize={5}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="movement">
+          <Card>
+            <CardHeader>
+              <CardTitle>Stock Movement Trends (Last 6 Months)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={movementData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="inward" stroke="#10b981" strokeWidth={2} name="Inward" />
+                    <Line type="monotone" dataKey="outward" stroke="#ef4444" strokeWidth={2} name="Outward" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="category">
+          <Card>
+            <CardHeader>
+              <CardTitle>Inventory Value by Category</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RePieChart>
+                    <Pie
+                      data={categoryData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                  </RePieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="warranty">
+          <Card>
+            <CardHeader>
+              <CardTitle>Warranty Status Distribution</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RePieChart>
+                    <Pie
+                      data={warrantyData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, value }) => `${name}: ${value}`}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      <Cell fill="#10b981" />
+                      <Cell fill="#f59e0b" />
+                      <Cell fill="#ef4444" />
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </RePieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
