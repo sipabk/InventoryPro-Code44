@@ -99,7 +99,7 @@ export default function Dashboard() {
         />
         <StatsCard
           title="Total Value"
-          value={`$${totalValue.toLocaleString()}`}
+          value={`BWP ${totalValue.toLocaleString()}`}
           icon={DollarSign}
           color="emerald"
           subtitle="Inventory value"

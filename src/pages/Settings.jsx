@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings as SettingsIcon, DollarSign, Bell, Calendar, Database, Shield, Save, Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
-const PRESET_CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'AUD', 'CAD', 'JPY', 'CNY'];
+const PRESET_CURRENCIES = ['BWP', 'USD', 'EUR', 'GBP', 'INR', 'AUD', 'CAD', 'JPY', 'CNY'];
 
 const defaultSettings = {
   // General
@@ -19,7 +19,7 @@ const defaultSettings = {
   timezone: 'UTC',
   date_format: 'MM/dd/yyyy',
   // Financial
-  default_currency: 'USD',
+  default_currency: 'BWP',
   financial_year_start: '01',
   tax_rate: 0,
   valuation_method: 'weighted_average',

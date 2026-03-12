@@ -84,8 +84,8 @@ export default function Reports() {
     { header: 'SKU', accessor: 'sku' },
     { header: 'Stock', accessor: 'quantity_in_stock' },
     { header: 'Reorder Level', accessor: 'reorder_level' },
-    { header: 'Cost', accessor: (row) => `$${(row.cost_price || 0).toFixed(2)}` },
-    { header: 'Value', accessor: (row) => `$${((row.quantity_in_stock || 0) * (row.cost_price || 0)).toFixed(2)}` },
+    { header: 'Cost', accessor: (row) => `BWP ${(row.cost_price || 0).toFixed(2)}` },
+    { header: 'Value', accessor: (row) => `BWP ${((row.quantity_in_stock || 0) * (row.cost_price || 0)).toFixed(2)}` },
   ];
 
   const exportCSV = (data, filename) => {
@@ -133,7 +133,7 @@ export default function Reports() {
               </div>
               <div>
                 <p className="text-sm text-slate-500">Inventory Value</p>
-                <p className="text-2xl font-bold">${totalValue.toLocaleString()}</p>
+                <p className="text-2xl font-bold">BWP {totalValue.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -146,7 +146,7 @@ export default function Reports() {
               </div>
               <div>
                 <p className="text-sm text-slate-500">Retail Value</p>
-                <p className="text-2xl font-bold">${totalRetailValue.toLocaleString()}</p>
+                <p className="text-2xl font-bold">BWP {totalRetailValue.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -260,7 +260,7 @@ export default function Reports() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                    <Tooltip formatter={(value) => `BWP ${value.toLocaleString()}`} />
                   </RePieChart>
                 </ResponsiveContainer>
               </div>
