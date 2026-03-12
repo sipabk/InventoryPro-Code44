@@ -8,10 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Settings as SettingsIcon, DollarSign, Bell, Calendar, Database, Shield, Save, Loader2, Plus, X, AlertTriangle, Trash2, RefreshCw, CheckCircle } from "lucide-react";
+import { Settings as SettingsIcon, DollarSign, Bell, Calendar, Database, Shield, Save, Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
-import { Checkbox } from "@/components/ui/checkbox";
 
 const PRESET_CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'AUD', 'CAD', 'JPY', 'CNY'];
 
@@ -40,14 +38,6 @@ export default function Settings() {
   const [settings, setSettings] = useState(defaultSettings);
   const [saving, setSaving] = useState(false);
   const [newCurrency, setNewCurrency] = useState('');
-  
-  // Admin panel state
-  const [clearDataDialogOpen, setClearDataDialogOpen] = useState(false);
-  const [confirmText, setConfirmText] = useState('');
-  const [clearingData, setClearingData] = useState(false);
-  const [preserveSettings, setPreserveSettings] = useState(true);
-  const [preserveUsers, setPreserveUsers] = useState(true);
-  const [clearProgress, setClearProgress] = useState(null);
   
   const queryClient = useQueryClient();
 
@@ -101,104 +91,6 @@ export default function Settings() {
   };
 
   const customCurrencies = settings.custom_currencies ? settings.custom_currencies.split(',').filter(c => c.trim()) : [];
-
-  const ENTITIES_TO_CLEAR = [
-    { key: 'Product', label: 'Products' },
-    { key: 'Category', label: 'Categories' },
-    { key: 'Warehouse', label: 'Warehouses' },
-    { key: 'Supplier', label: 'Suppliers' },
-    { key: 'StockTransaction', label: 'Stock Transactions' },
-    { key: 'Warranty', label: 'Warranties' },
-    { key: 'PurchaseOrder', label: 'Purchase Orders' },
-    { key: 'ActivityLog', label: 'Activity Logs' },
-    { key: 'ScheduledReport', label: 'Scheduled Reports' },
-    { key: 'FaultyReturn', label: 'Faulty Returns' },
-  ];
-
-  const handleClearAllData = async () => {
-    if (confirmText !== 'DELETE ALL DATA') {
-      toast.error('Please type "DELETE ALL DATA" to confirm');
-      return;
-    }
-
-    setClearingData(true);
-    setClearProgress({ current: 0, total: ENTITIES_TO_CLEAR.length, entity: '' });
-
-    try {
-      for (let i = 0; i < ENTITIES_TO_CLEAR.length; i++) {
-        const entity = ENTITIES_TO_CLEAR[i];
-        setClearProgress({ current: i + 1, total: ENTITIES_TO_CLEAR.length, entity: entity.label });
-
-        try {
-          const items = await base44.entities[entity.key]?.list?.();
-          if (items && items.length > 0) {
-            for (const item of items) {
-              try {
-                await base44.entities[entity.key].delete(item.id);
-              } catch (e) {
-                console.log(`[v0] Failed to delete ${entity.key} item:`, e);
-              }
-            }
-          }
-        } catch (e) {
-          console.log(`[v0] Entity ${entity.key} not found or error:`, e);
-        }
-      }
-
-      // Clear settings if not preserved
-      if (!preserveSettings) {
-        try {
-          const settingsItems = await base44.entities.SystemSettings.list();
-          for (const item of settingsItems) {
-            await base44.entities.SystemSettings.delete(item.id);
-          }
-        } catch (e) {
-          console.log('[v0] Settings clear error:', e);
-        }
-      }
-
-      // Clear users if not preserved
-      if (!preserveUsers) {
-        try {
-          const users = await base44.entities.User?.list?.();
-          if (users) {
-            for (const user of users) {
-              await base44.entities.User.delete(user.id);
-            }
-          }
-        } catch (e) {
-          console.log('[v0] Users clear error:', e);
-        }
-      }
-
-      // Log the clear action
-      try {
-        await base44.entities.ActivityLog.create({
-          action: 'clear_all_data',
-          entity_type: 'System',
-          entity_name: 'All Data',
-          details: `Cleared all data. Preserved settings: ${preserveSettings}, Preserved users: ${preserveUsers}`,
-          user_name: 'Admin',
-          created_date: new Date().toISOString()
-        });
-      } catch (e) {
-        console.log('[v0] Activity log creation skipped');
-      }
-
-      // Invalidate all queries
-      queryClient.invalidateQueries();
-      
-      setClearDataDialogOpen(false);
-      setConfirmText('');
-      setClearProgress(null);
-      toast.success('All data has been cleared successfully');
-    } catch (error) {
-      console.error('[v0] Clear data error:', error);
-      toast.error('Failed to clear all data');
-    }
-
-    setClearingData(false);
-  };
   
   const addCurrency = () => {
     if (newCurrency && !customCurrencies.includes(newCurrency.toUpperCase())) {
@@ -232,7 +124,6 @@ export default function Settings() {
           <TabsTrigger value="financial">Financial</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="backup">Backup</TabsTrigger>
-          <TabsTrigger value="admin">Admin</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -464,164 +355,7 @@ export default function Settings() {
             </CardContent>
           </Card>
         </TabsContent>
-
-        <TabsContent value="admin">
-          <Card className="border-red-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-red-700">
-                <Shield className="w-5 h-5" /> Admin Panel
-              </CardTitle>
-              <CardDescription>Dangerous operations - Admin only</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-red-800">Clear All Data</h3>
-                    <p className="text-sm text-red-700">
-                      This action will permanently delete all inventory data including products, categories, 
-                      warehouses, suppliers, transactions, warranties, and reports. This cannot be undone.
-                    </p>
-                    <Button 
-                      variant="destructive" 
-                      onClick={() => setClearDataDialogOpen(true)}
-                      className="mt-2"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" /> Clear All Data
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <RefreshCw className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-amber-800">Reset to Default State</h3>
-                    <p className="text-sm text-amber-700">
-                      Clears all data and resets system settings to defaults. Useful for starting fresh 
-                      before a new import or for demo purposes.
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        setPreserveSettings(false);
-                        setPreserveUsers(true);
-                        setClearDataDialogOpen(true);
-                      }}
-                      className="mt-2 border-amber-400 text-amber-700 hover:bg-amber-100"
-                    >
-                      <RefreshCw className="w-4 h-4 mr-2" /> Reset System
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
-
-      {/* Clear All Data Confirmation Dialog */}
-      <Dialog open={clearDataDialogOpen} onOpenChange={setClearDataDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-700">
-              <AlertTriangle className="w-5 h-5" />
-              Confirm Data Deletion
-            </DialogTitle>
-            <DialogDescription>
-              This action is permanent and cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="p-3 bg-red-50 rounded-lg text-sm text-red-700">
-              <p className="font-medium mb-2">The following data will be deleted:</p>
-              <ul className="list-disc list-inside space-y-1">
-                {ENTITIES_TO_CLEAR.map(e => (
-                  <li key={e.key}>{e.label}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <Checkbox 
-                  checked={preserveSettings}
-                  onCheckedChange={setPreserveSettings}
-                />
-                <span className="text-sm">Preserve system settings</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <Checkbox 
-                  checked={preserveUsers}
-                  onCheckedChange={setPreserveUsers}
-                />
-                <span className="text-sm">Preserve user accounts</span>
-              </label>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">
-                Type <span className="font-mono bg-slate-100 px-1">DELETE ALL DATA</span> to confirm:
-              </Label>
-              <Input
-                value={confirmText}
-                onChange={(e) => setConfirmText(e.target.value)}
-                placeholder="DELETE ALL DATA"
-                className="mt-2 font-mono"
-                disabled={clearingData}
-              />
-            </div>
-
-            {clearProgress && (
-              <div className="p-3 bg-slate-50 rounded-lg">
-                <div className="flex items-center justify-between text-sm mb-2">
-                  <span>Clearing {clearProgress.entity}...</span>
-                  <span>{clearProgress.current} / {clearProgress.total}</span>
-                </div>
-                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-red-500 transition-all duration-300"
-                    style={{ width: `${(clearProgress.current / clearProgress.total) * 100}%` }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          <DialogFooter className="gap-2">
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setClearDataDialogOpen(false);
-                setConfirmText('');
-              }}
-              disabled={clearingData}
-            >
-              Cancel
-            </Button>
-            <Button 
-              variant="destructive"
-              onClick={handleClearAllData}
-              disabled={confirmText !== 'DELETE ALL DATA' || clearingData}
-            >
-              {clearingData ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Clearing...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete All Data
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
