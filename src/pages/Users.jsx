@@ -48,11 +48,15 @@ export default function UsersPage() {
   const handleInvite = async () => {
     if (!inviteEmail) return;
     setInviting(true);
-    await base44.users.inviteUser(inviteEmail, inviteRole);
+    try {
+      await base44.users.inviteUser(inviteEmail, inviteRole);
+      setInviteModalOpen(false);
+      setInviteEmail('');
+      toast.success('Invitation sent successfully');
+    } catch (error) {
+      toast.error('Failed to send invitation');
+    }
     setInviting(false);
-    setInviteModalOpen(false);
-    setInviteEmail('');
-    toast.success('Invitation sent successfully');
   };
 
   const openEdit = (user) => {
@@ -85,4 +89,140 @@ export default function UsersPage() {
           {row.role || 'user'}
         </Badge>
       )
- 
+    },
+    { 
+      header: 'Status', 
+      cell: (row) => (
+        <Badge className={row.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}>
+          {row.status || 'active'}
+        </Badge>
+      )
+    },
+    { 
+      header: 'Last Login', 
+      accessor: (row) => row.last_login ? format(new Date(row.last_login), 'MMM d, yyyy') : 'Never'
+    },
+    { 
+      header: 'Actions', 
+      cell: (row) => (
+        <Button variant="ghost" size="icon" onClick={() => openEdit(row)}>
+          <Edit2 className="w-4 h-4" />
+        </Button>
+      )
+    },
+  ];
+
+  return (
+    <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">Users</h1>
+          <p className="text-slate-500 mt-1">Manage team members and access</p>
+        </div>
+        <Button onClick={() => setInviteModalOpen(true)}>
+          <UserPlus className="w-4 h-4 mr-2" /> Invite User
+        </Button>
+      </div>
+
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <DataTable 
+          data={users} 
+          columns={columns} 
+          searchPlaceholder="Search users..." 
+          emptyMessage="No users found"
+        />
+      </div>
+
+      {/* Invite Modal */}
+      <FormModal
+        open={inviteModalOpen}
+        onClose={() => setInviteModalOpen(false)}
+        title="Invite User"
+        onSubmit={handleInvite}
+        submitLabel="Send Invitation"
+        isLoading={inviting}
+      >
+        <div className="space-y-4">
+          <div>
+            <Label>Email Address</Label>
+            <Input 
+              type="email" 
+              placeholder="user@example.com"
+              value={inviteEmail} 
+              onChange={(e) => setInviteEmail(e.target.value)} 
+            />
+          </div>
+          <div>
+            <Label>Role</Label>
+            <Select value={inviteRole} onValueChange={setInviteRole}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {ROLES.map(role => (
+                  <SelectItem key={role} value={role}>{role}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </FormModal>
+
+      {/* Edit Modal */}
+      <FormModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        title="Edit User"
+        onSubmit={() => updateMutation.mutate({ 
+          id: editingUser?.id, 
+          data: { role: editingUser?.role, status: editingUser?.status } 
+        })}
+        isLoading={updateMutation.isPending}
+      >
+        {editingUser && (
+          <div className="space-y-4">
+            <div>
+              <Label>Email</Label>
+              <Input value={editingUser.email} disabled />
+            </div>
+            <div>
+              <Label>Full Name</Label>
+              <Input value={editingUser.full_name || ''} disabled />
+            </div>
+            <div>
+              <Label>Role</Label>
+              <Select 
+                value={editingUser.role || 'viewer'} 
+                onValueChange={(v) => setEditingUser({ ...editingUser, role: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROLES.map(role => (
+                    <SelectItem key={role} value={role}>{role}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Status</Label>
+              <Select 
+                value={editingUser.status || 'active'} 
+                onValueChange={(v) => setEditingUser({ ...editingUser, status: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+      </FormModal>
+    </div>
+  );
+}

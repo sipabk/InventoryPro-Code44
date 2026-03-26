@@ -85,4 +85,53 @@ export default function Dashboard() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
           <p className="text-slate-500 mt-1">Inventory overview and insights</p>
- 
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatsCard
+          title="Total Stock"
+          value={totalStock.toLocaleString()}
+          icon={Package}
+          color="blue"
+          subtitle={`${products.length} products`}
+        />
+        <StatsCard
+          title="Total Value"
+          value={`BWP ${totalValue.toLocaleString()}`}
+          icon={DollarSign}
+          color="emerald"
+          subtitle="Inventory value"
+        />
+        <StatsCard
+          title="Low Stock"
+          value={lowStockItems}
+          icon={AlertTriangle}
+          color="amber"
+          subtitle="Items need reorder"
+        />
+        <StatsCard
+          title="Expiring Warranties"
+          value={expiringWarranties}
+          icon={Shield}
+          color="red"
+          subtitle="Within 30 days"
+        />
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <InventoryChart data={monthlyData} />
+        <StockPieChart data={pieData} />
+      </div>
+
+      {/* Alerts and Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <LowStockAlerts products={products} />
+        <WarrantyAlerts warranties={warranties} products={products} />
+        <RecentTransactions transactions={transactions} products={products} />
+      </div>
+    </div>
+  );
+}
