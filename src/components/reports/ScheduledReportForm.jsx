@@ -37,7 +37,7 @@ export default function ScheduledReportForm({ report, onClose }) {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['scheduledReports']);
+      queryClient.invalidateQueries({ queryKey: ['scheduledReports'] });
       toast.success(report ? 'Report updated' : 'Report scheduled');
       onClose();
     }
