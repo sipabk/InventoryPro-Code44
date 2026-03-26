@@ -24,7 +24,7 @@ export default function ScheduledReportsManager() {
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.ScheduledReport.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['scheduledReports']);
+      queryClient.invalidateQueries({ queryKey: ['scheduledReports'] });
       setDeletingReport(null);
       toast.success('Scheduled report deleted');
     }
@@ -33,7 +33,7 @@ export default function ScheduledReportsManager() {
   const toggleStatusMutation = useMutation({
     mutationFn: ({ id, status }) => base44.entities.ScheduledReport.update(id, { status }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['scheduledReports']);
+      queryClient.invalidateQueries({ queryKey: ['scheduledReports'] });
       toast.success('Status updated');
     }
   });

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -7,7 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Download, Play, Settings2 } from 'lucide-react';
+import { Download, Play, Settings2, QrCode, Share2, X, Package } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import DataTable from '../common/DataTable';
 import { toast } from 'sonner';
 
@@ -41,14 +42,38 @@ const REPORT_SOURCES = {
   }
 };
 
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+
 export default function CustomReportBuilder({ products, transactions, categories, warehouses }) {
   const [source, setSource] = useState('products');
   const [selectedFields, setSelectedFields] = useState(['sku', 'name', 'quantity_in_stock', 'unit_price', 'status']);
   const [groupBy, setGroupBy] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedProductIds, setSelectedProductIds] = useState([]);
+  const [productSearch, setProductSearch] = useState('');
   const [reportData, setReportData] = useState(null);
+  const [showQR, setShowQR] = useState(false);
+  const [qrUrl, setQrUrl] = useState('');
+  const qrImgRef = useRef(null);
 
   const availableFields = REPORT_SOURCES[source]?.fields || [];
+
+  // Load config from URL param on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('report');
+    if (encoded) {
+      try {
+        const config = JSON.parse(atob(encoded));
+        if (config.source) setSource(config.source);
+        if (config.selectedFields) setSelectedFields(config.selectedFields);
+        if (config.groupBy !== undefined) setGroupBy(config.groupBy);
+        if (config.statusFilter) setStatusFilter(config.statusFilter);
+        if (config.selectedProductIds) setSelectedProductIds(config.selectedProductIds);
+        toast.success('Report configuration loaded from shared link');
+      } catch {}
+    }
+  }, []);
 
   const toggleField = (key) => {
     setSelectedFields(prev =>
@@ -56,12 +81,31 @@ export default function CustomReportBuilder({ products, transactions, categories
     );
   };
 
+  const toggleProduct = (id) => {
+    setSelectedProductIds(prev =>
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
+    );
+  };
+
+  const filteredProductList = useMemo(() => {
+    if (!productSearch) return products;
+    return products.filter(p => {
+      const name = p.name || p.data?.name || '';
+      const sku = p.sku || p.data?.sku || '';
+      return name.toLowerCase().includes(productSearch.toLowerCase()) ||
+             sku.toLowerCase().includes(productSearch.toLowerCase());
+    });
+  }, [products, productSearch]);
+
   const buildReport = () => {
     let rows = [];
-
     if (source === 'products') {
       rows = products.map(p => p.data || p).filter(p => {
         if (statusFilter !== 'all' && p.status !== statusFilter) return false;
+        if (selectedProductIds.length > 0) {
+          const orig = products.find(op => (op.data?.sku || op.sku) === p.sku);
+          if (!orig || !selectedProductIds.includes(orig.id)) return false;
+        }
         return true;
       });
     } else {
@@ -81,12 +125,40 @@ export default function CustomReportBuilder({ products, transactions, categories
     toast.success(`Report generated: ${projected.length} rows`);
   };
 
+  const getShareableUrl = () => {
+    const config = { source, selectedFields, groupBy, statusFilter, selectedProductIds };
+    const encoded = btoa(JSON.stringify(config));
+    return `${window.location.origin}${window.location.pathname}?report=${encoded}#custom`;
+  };
+
+  const handleShare = () => {
+    const url = getShareableUrl();
+    navigator.clipboard.writeText(url);
+    toast.success('Shareable link copied to clipboard');
+  };
+
+  const handleGenerateQR = () => {
+    const url = getShareableUrl();
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
+    setQrUrl(qrApiUrl);
+    setShowQR(true);
+  };
+
+  const handleDownloadQR = () => {
+    const a = document.createElement('a');
+    a.href = qrUrl;
+    a.download = `report-qr-${Date.now()}.png`;
+    a.target = '_blank';
+    a.click();
+    toast.success('QR code downloaded');
+  };
+
   const chartData = useMemo(() => {
     if (!reportData || !groupBy) return [];
     const grouped = {};
     const numericFields = availableFields.filter(f => f.numeric && selectedFields.includes(f.key));
     reportData.forEach(row => {
-      const key = row[groupBy] || 'Unknown';
+      const key = String(row[groupBy] || 'Unknown');
       if (!grouped[key]) {
         grouped[key] = { name: key };
         numericFields.forEach(f => { grouped[key][f.key] = 0; });
@@ -115,8 +187,6 @@ export default function CustomReportBuilder({ products, transactions, categories
     return { header: fieldDef?.label || f, accessor: f };
   });
 
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-
   return (
     <div className="space-y-6">
       <Card>
@@ -129,7 +199,7 @@ export default function CustomReportBuilder({ products, transactions, categories
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label>Data Source</Label>
-              <Select value={source} onValueChange={(v) => { setSource(v); setSelectedFields([]); setReportData(null); }}>
+              <Select value={source} onValueChange={(v) => { setSource(v); setSelectedFields([]); setReportData(null); setSelectedProductIds([]); }}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {Object.entries(REPORT_SOURCES).map(([key, val]) => (
@@ -169,6 +239,49 @@ export default function CustomReportBuilder({ products, transactions, categories
             </div>
           </div>
 
+          {/* Product Selection (only for products source) */}
+          {source === 'products' && (
+            <div className="border rounded-lg p-4 space-y-3 bg-blue-50">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-2 text-blue-800">
+                  <Package className="w-4 h-4" /> Select Specific Products
+                  <span className="text-xs font-normal text-blue-600">(leave empty to include all)</span>
+                </Label>
+                {selectedProductIds.length > 0 && (
+                  <Button size="sm" variant="ghost" onClick={() => setSelectedProductIds([])}>
+                    <X className="w-3 h-3 mr-1" /> Clear ({selectedProductIds.length})
+                  </Button>
+                )}
+              </div>
+              <Input
+                placeholder="Search products by name or SKU..."
+                value={productSearch}
+                onChange={(e) => setProductSearch(e.target.value)}
+                className="bg-white"
+              />
+              <div className="max-h-48 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-1 bg-white rounded border p-2">
+                {filteredProductList.slice(0, 100).map(p => {
+                  const name = p.name || p.data?.name || 'Unknown';
+                  const sku = p.sku || p.data?.sku || '';
+                  return (
+                    <label key={p.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-slate-50 cursor-pointer text-sm">
+                      <Checkbox
+                        checked={selectedProductIds.includes(p.id)}
+                        onCheckedChange={() => toggleProduct(p.id)}
+                      />
+                      <span className="truncate">{name}</span>
+                      <span className="text-slate-400 text-xs shrink-0">{sku}</span>
+                    </label>
+                  );
+                })}
+                {filteredProductList.length === 0 && <p className="text-slate-400 text-sm p-2">No products found</p>}
+              </div>
+              {selectedProductIds.length > 0 && (
+                <p className="text-xs text-blue-700 font-medium">{selectedProductIds.length} product(s) selected</p>
+              )}
+            </div>
+          )}
+
           <div>
             <Label className="mb-2 block">Select Fields to Include</Label>
             <div className="flex flex-wrap gap-3">
@@ -185,7 +298,7 @@ export default function CustomReportBuilder({ products, transactions, categories
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button onClick={buildReport} disabled={selectedFields.length === 0}>
               <Play className="w-4 h-4 mr-2" /> Generate Report
             </Button>
@@ -194,6 +307,12 @@ export default function CustomReportBuilder({ products, transactions, categories
                 <Download className="w-4 h-4 mr-2" /> Export CSV
               </Button>
             )}
+            <Button variant="outline" onClick={handleShare}>
+              <Share2 className="w-4 h-4 mr-2" /> Copy Share Link
+            </Button>
+            <Button variant="outline" onClick={handleGenerateQR}>
+              <QrCode className="w-4 h-4 mr-2" /> Generate QR Code
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -224,9 +343,7 @@ export default function CustomReportBuilder({ products, transactions, categories
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Results — {reportData.length} rows</span>
-              </CardTitle>
+              <CardTitle>Results — {reportData.length} rows</CardTitle>
             </CardHeader>
             <CardContent>
               <DataTable
@@ -239,6 +356,34 @@ export default function CustomReportBuilder({ products, transactions, categories
           </Card>
         </>
       )}
+
+      {/* QR Code Dialog */}
+      <Dialog open={showQR} onOpenChange={setShowQR}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <QrCode className="w-5 h-5" /> Report QR Code
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-center">
+            <p className="text-sm text-slate-500">Scan this QR code to open this report configuration in any browser</p>
+            {qrUrl && (
+              <div className="flex justify-center">
+                <img ref={qrImgRef} src={qrUrl} alt="Report QR Code" className="border rounded-lg p-2 bg-white" width={200} height={200} />
+              </div>
+            )}
+            <div className="flex gap-2 justify-center">
+              <Button onClick={handleDownloadQR} variant="outline">
+                <Download className="w-4 h-4 mr-2" /> Download QR
+              </Button>
+              <Button onClick={handleShare} variant="outline">
+                <Share2 className="w-4 h-4 mr-2" /> Copy Link
+              </Button>
+            </div>
+            <p className="text-xs text-slate-400">Link encodes your current filter + field configuration</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
