@@ -15,9 +15,9 @@ export default function InventoryChart({ data, title }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} />
               <YAxis tick={{ fill: '#64748b', fontSize: 12 }} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#fff', 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#fff',
                   border: '1px solid #e2e8f0',
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
