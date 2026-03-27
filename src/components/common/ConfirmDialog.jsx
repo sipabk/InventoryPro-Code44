@@ -2,11 +2,11 @@ import React from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
 
-export default function ConfirmDialog({ 
-  open, 
-  onClose, 
-  onConfirm, 
-  title = "Are you sure?", 
+export default function ConfirmDialog({
+  open,
+  onClose,
+  onConfirm,
+  title = "Are you sure?",
   description = "This action cannot be undone.",
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
@@ -22,8 +22,8 @@ export default function ConfirmDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>{cancelLabel}</AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={onConfirm} 
+          <AlertDialogAction
+            onClick={onConfirm}
             disabled={isLoading}
             className={variant === 'destructive' ? 'bg-red-600 hover:bg-red-700' : ''}
           >
