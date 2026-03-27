@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Download, DollarSign } from 'lucide-react';
+import { formatBWP } from '@/utils/currency';
 import DataTable from '../common/DataTable';
 
 export default function ValuationReport({ products, transactions, categories, warehouseFilter, categoryFilter, onExport }) {
@@ -80,8 +81,8 @@ export default function ValuationReport({ products, transactions, categories, wa
     { header: 'Product', accessor: 'name' },
     { header: 'Category', accessor: 'category' },
     { header: 'Stock', accessor: 'currentStock' },
-    { header: 'Unit Cost', accessor: (row) => `${row.currency} ${row.unitCost.toFixed(2)}` },
-    { header: 'Total Value', accessor: (row) => `${row.currency} ${row.totalValue.toFixed(2)}` }
+    { header: 'Unit Cost (BWP)', accessor: (row) => formatBWP(row.unitCost) },
+    { header: 'Total Value (BWP)', accessor: (row) => formatBWP(row.totalValue) }
   ];
 
   return (
@@ -112,7 +113,7 @@ export default function ValuationReport({ products, transactions, categories, wa
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-slate-900">
-              ${summary.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formatBWP(summary.totalValue)}
             </p>
             <p className="text-sm text-slate-500 mt-1">{valuationMethod.replace('_', ' ').toUpperCase()} method</p>
           </CardContent>
@@ -146,7 +147,7 @@ export default function ValuationReport({ products, transactions, categories, wa
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
                 <YAxis />
-                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                <Tooltip formatter={(value) => formatBWP(value)} />
                 <Bar dataKey="value" fill="#3b82f6" />
               </BarChart>
             </ResponsiveContainer>
@@ -169,7 +170,7 @@ export default function ValuationReport({ products, transactions, categories, wa
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                <Tooltip formatter={(value) => formatBWP(value)} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
