@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Download, TrendingUp } from 'lucide-react';
+import { formatBWP } from '@/utils/currency';
 import DataTable from '../common/DataTable';
 
 export default function StockMovementReport({ products, transactions, warehouses, dateFrom, dateTo, warehouseFilter, onExport }) {
@@ -21,7 +22,7 @@ export default function StockMovementReport({ products, transactions, warehouses
       const warehouse = warehouses.find(w => w.id === td.warehouse_id);
       const pd = product?.data || product;
       const wd = warehouse?.data || warehouse;
-      
+
       return {
         date: td.transaction_date,
         transactionNumber: td.transaction_number,
@@ -48,7 +49,7 @@ export default function StockMovementReport({ products, transactions, warehouses
         grouped[item.date].outward += item.quantity;
       }
     });
-    
+
     return Object.values(grouped).sort((a, b) => a.date.localeCompare(b.date));
   }, [movementData]);
 
@@ -57,19 +58,18 @@ export default function StockMovementReport({ products, transactions, warehouses
     { header: 'Transaction #', accessor: 'transactionNumber' },
     { header: 'Product', accessor: 'product' },
     { header: 'Warehouse', accessor: 'warehouse' },
-    { 
-      header: 'Type', 
+    {
+      header: 'Type',
       cell: (row) => (
-        <span className={`px-2 py-1 rounded text-xs font-semibold ${
-          row.type === 'inward' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-        }`}>
+        <span className={`px-2 py-1 rounded text-xs font-semibold ${row.type === 'inward' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          }`}>
           {row.type}
         </span>
       )
     },
     { header: 'Quantity', accessor: 'quantity' },
-    { header: 'Unit Cost', accessor: (row) => `$${row.unitCost.toFixed(2)}` },
-    { header: 'Total Value', accessor: (row) => `$${row.totalCost.toFixed(2)}` }
+    { header: 'Unit Cost (BWP)', accessor: (row) => formatBWP(row.unitCost) },
+    { header: 'Total Value (BWP)', accessor: (row) => formatBWP(row.totalCost) }
   ];
 
   return (
