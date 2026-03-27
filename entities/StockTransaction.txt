@@ -36,24 +36,30 @@
       "description": "Serial numbers of items received/dispatched"
     },
     "unit_cost": {
-      "type": "number"
+      "type": "number",
+      "description": "Unit cost in original supplier currency"
     },
     "total_cost": {
-      "type": "number"
+      "type": "number",
+      "description": "Total cost in original supplier currency"
     },
     "currency": {
       "type": "string",
-      "enum": [
-        "USD",
-        "EUR",
-        "GBP",
-        "INR",
-        "AUD",
-        "CAD",
-        "JPY",
-        "CNY"
-      ],
-      "default": "USD"
+      "default": "BWP",
+      "description": "Original supplier invoice currency"
+    },
+    "exchange_rate": {
+      "type": "number",
+      "default": 1,
+      "description": "Exchange rate to BWP at time of transaction"
+    },
+    "unit_cost_bwp": {
+      "type": "number",
+      "description": "Unit cost converted to BWP"
+    },
+    "total_cost_bwp": {
+      "type": "number",
+      "description": "Total cost converted to BWP"
     },
     "reference_number": {
       "type": "string",
