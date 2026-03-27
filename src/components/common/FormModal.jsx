@@ -3,12 +3,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-export default function FormModal({ 
-  open, 
-  onClose, 
-  title, 
-  children, 
-  onSubmit, 
+export default function FormModal({
+  open,
+  onClose,
+  title,
+  children,
+  onSubmit,
   submitLabel = "Save",
   isLoading = false,
   size = "md"
@@ -34,4 +34,13 @@ export default function FormModal({
             <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
               Cancel
             </Button>
- 
+            <Button type="submit" disabled={isLoading}>
+              {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {submitLabel}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
