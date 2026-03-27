@@ -61,13 +61,13 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
   const updateItem = (index, field, value) => {
     const updated = [...items];
     updated[index] = { ...updated[index], [field]: value };
-    
+
     if (field === 'quantity_ordered' || field === 'unit_cost') {
       const qty = field === 'quantity_ordered' ? value : updated[index].quantity_ordered;
       const cost = field === 'unit_cost' ? value : updated[index].unit_cost;
       updated[index].total_cost = qty * cost;
     }
-    
+
     setItems(updated);
   };
 
@@ -95,7 +95,7 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
       if (po) {
         await base44.entities.PurchaseOrder.update(po.id, poData);
         poId = po.id;
-        
+
         const existingItems = await base44.entities.PurchaseOrderItem.filter({ po_id: po.id });
         for (const item of existingItems) {
           await base44.entities.PurchaseOrderItem.delete(item.id);
@@ -141,7 +141,7 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
             </div>
             <div>
               <Label>Supplier *</Label>
-              <Select value={formData.supplier_id} onValueChange={(v) => setFormData({...formData, supplier_id: v})}>
+              <Select value={formData.supplier_id} onValueChange={(v) => setFormData({ ...formData, supplier_id: v })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select supplier" />
                 </SelectTrigger>
@@ -154,7 +154,7 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
             </div>
             <div>
               <Label>Warehouse *</Label>
-              <Select value={formData.warehouse_id} onValueChange={(v) => setFormData({...formData, warehouse_id: v})}>
+              <Select value={formData.warehouse_id} onValueChange={(v) => setFormData({ ...formData, warehouse_id: v })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select warehouse" />
                 </SelectTrigger>
@@ -170,23 +170,23 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
           <div className="grid grid-cols-4 gap-4">
             <div>
               <Label>Order Date</Label>
-              <Input 
-                type="date" 
-                value={formData.order_date} 
-                onChange={(e) => setFormData({...formData, order_date: e.target.value})}
+              <Input
+                type="date"
+                value={formData.order_date}
+                onChange={(e) => setFormData({ ...formData, order_date: e.target.value })}
               />
             </div>
             <div>
               <Label>Expected Delivery</Label>
-              <Input 
-                type="date" 
-                value={formData.expected_delivery_date} 
-                onChange={(e) => setFormData({...formData, expected_delivery_date: e.target.value})}
+              <Input
+                type="date"
+                value={formData.expected_delivery_date}
+                onChange={(e) => setFormData({ ...formData, expected_delivery_date: e.target.value })}
               />
             </div>
             <div>
               <Label>Status</Label>
-              <Select value={formData.status} onValueChange={(v) => setFormData({...formData, status: v})}>
+              <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -200,7 +200,7 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
             </div>
             <div>
               <Label>Currency</Label>
-              <Select value={formData.currency} onValueChange={(v) => setFormData({...formData, currency: v})}>
+              <Select value={formData.currency} onValueChange={(v) => setFormData({ ...formData, currency: v })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -237,8 +237,8 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
                     return (
                       <tr key={idx} className="border-t">
                         <td className="p-2">
-                          <Select 
-                            value={itemData.product_id} 
+                          <Select
+                            value={itemData.product_id}
                             onValueChange={(v) => updateItem(idx, 'product_id', v)}
                           >
                             <SelectTrigger>
@@ -252,24 +252,24 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
                           </Select>
                         </td>
                         <td className="p-2">
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             value={itemData.quantity_ordered}
                             onChange={(e) => updateItem(idx, 'quantity_ordered', Number(e.target.value))}
                             className="w-20"
                           />
                         </td>
                         <td className="p-2">
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             value={itemData.unit_cost}
                             onChange={(e) => updateItem(idx, 'unit_cost', Number(e.target.value))}
                             className="w-24"
                           />
                         </td>
                         <td className="p-2">
-                          <Input 
-                            type="number" 
+                          <Input
+                            type="number"
                             value={itemData.tax_rate || 0}
                             onChange={(e) => updateItem(idx, 'tax_rate', Number(e.target.value))}
                             className="w-20"
@@ -303,10 +303,10 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
               </div>
               <div className="flex justify-between text-sm">
                 <span>Shipping:</span>
-                <Input 
-                  type="number" 
+                <Input
+                  type="number"
                   value={formData.shipping_cost}
-                  onChange={(e) => setFormData({...formData, shipping_cost: Number(e.target.value)})}
+                  onChange={(e) => setFormData({ ...formData, shipping_cost: Number(e.target.value) })}
                   className="w-28 h-7 text-right"
                 />
               </div>
@@ -319,9 +319,9 @@ export default function POForm({ po, onClose, suppliers, warehouses }) {
 
           <div>
             <Label>Notes</Label>
-            <Textarea 
-              value={formData.notes} 
-              onChange={(e) => setFormData({...formData, notes: e.target.value})}
+            <Textarea
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
             />
           </div>
