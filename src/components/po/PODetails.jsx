@@ -55,10 +55,10 @@ export default function PODetails({ po, onClose, suppliers, warehouses }) {
                 <Package className="w-4 h-4" /> Supplier Information
               </h3>
               <div className="bg-slate-50 p-4 rounded-lg space-y-2">
-              <div><span className="font-medium">Name:</span> {supplierData.name}</div>
-              <div><span className="font-medium">Contact:</span> {supplierData.contact_person}</div>
-              <div><span className="font-medium">Email:</span> {supplierData.email}</div>
-              <div><span className="font-medium">Phone:</span> {supplierData.phone}</div>
+                <div><span className="font-medium">Name:</span> {supplierData.name}</div>
+                <div><span className="font-medium">Contact:</span> {supplierData.contact_person}</div>
+                <div><span className="font-medium">Email:</span> {supplierData.email}</div>
+                <div><span className="font-medium">Phone:</span> {supplierData.phone}</div>
               </div>
             </div>
 
@@ -95,16 +95,16 @@ export default function PODetails({ po, onClose, suppliers, warehouses }) {
                   {items.map((item, idx) => {
                     const d = item.data || item;
                     return (
-                    <tr key={idx} className="border-t">
-                      <td className="p-3">{getProductName(d.product_id)}</td>
-                      <td className="p-3">{d.quantity_ordered}</td>
-                      <td className="p-3">{d.quantity_received || 0}</td>
-                      <td className="p-3">{poData.currency} {d.unit_cost?.toFixed(2)}</td>
-                      <td className="p-3">{d.tax_rate || 0}%</td>
-                      <td className="p-3 text-right font-semibold">
-                        {poData.currency} {d.total_cost?.toFixed(2)}
-                      </td>
-                    </tr>
+                      <tr key={idx} className="border-t">
+                        <td className="p-3">{getProductName(d.product_id)}</td>
+                        <td className="p-3">{d.quantity_ordered}</td>
+                        <td className="p-3">{d.quantity_received || 0}</td>
+                        <td className="p-3">{poData.currency} {d.unit_cost?.toFixed(2)}</td>
+                        <td className="p-3">{d.tax_rate || 0}%</td>
+                        <td className="p-3 text-right font-semibold">
+                          {poData.currency} {d.total_cost?.toFixed(2)}
+                        </td>
+                      </tr>
                     );
                   })}
                 </tbody>
