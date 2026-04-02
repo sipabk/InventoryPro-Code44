@@ -71,7 +71,7 @@ export default function CustomReportBuilder({ products, transactions, categories
         if (config.statusFilter) setStatusFilter(config.statusFilter);
         if (config.selectedProductIds) setSelectedProductIds(config.selectedProductIds);
         toast.success('Report configuration loaded from shared link');
-      } catch {}
+      } catch { }
     }
   }, []);
 
@@ -93,7 +93,7 @@ export default function CustomReportBuilder({ products, transactions, categories
       const name = p.name || p.data?.name || '';
       const sku = p.sku || p.data?.sku || '';
       return name.toLowerCase().includes(productSearch.toLowerCase()) ||
-             sku.toLowerCase().includes(productSearch.toLowerCase());
+        sku.toLowerCase().includes(productSearch.toLowerCase());
     });
   }, [products, productSearch]);
 

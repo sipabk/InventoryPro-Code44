@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Download, Clock } from 'lucide-react';
+import { formatBWP } from '@/utils/currency';
 import DataTable from '../common/DataTable';
 
 export default function AgingAnalysisReport({ products, dateFrom, dateTo, warehouseFilter, categoryFilter, onExport }) {
@@ -19,7 +20,7 @@ export default function AgingAnalysisReport({ products, dateFrom, dateTo, wareho
       const pd = product.data || product;
       const purchaseDate = pd.purchase_date ? new Date(pd.purchase_date) : new Date();
       const daysOld = Math.floor((today - purchaseDate) / (1000 * 60 * 60 * 24));
-      
+
       let ageGroup = '0-30 days';
       if (daysOld > 180) ageGroup = '180+ days';
       else if (daysOld > 90) ageGroup = '91-180 days';
@@ -66,8 +67,8 @@ export default function AgingAnalysisReport({ products, dateFrom, dateTo, wareho
     { header: 'Days Old', accessor: 'daysOld' },
     { header: 'Age Group', accessor: 'ageGroup' },
     { header: 'Quantity', accessor: 'quantity' },
-    { header: 'Unit Cost', accessor: (row) => `$${row.costPrice.toFixed(2)}` },
-    { header: 'Total Value', accessor: (row) => `$${row.value.toFixed(2)}` }
+    { header: 'Unit Cost (BWP)', accessor: (row) => formatBWP(row.costPrice) },
+    { header: 'Total Value (BWP)', accessor: (row) => formatBWP(row.value) }
   ];
 
   return (
@@ -94,7 +95,7 @@ export default function AgingAnalysisReport({ products, dateFrom, dateTo, wareho
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
                 <YAxis />
-                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                <Tooltip formatter={(value) => formatBWP(value)} />
                 <Bar dataKey="value" fill="#3b82f6" />
               </BarChart>
             </ResponsiveContainer>
@@ -122,7 +123,7 @@ export default function AgingAnalysisReport({ products, dateFrom, dateTo, wareho
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                <Tooltip formatter={(value) => formatBWP(value)} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>

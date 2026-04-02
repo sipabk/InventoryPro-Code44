@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { 
-  LayoutDashboard, Package, FolderTree, Warehouse, Users, ArrowRightLeft, 
+import {
+  LayoutDashboard, Package, FolderTree, Warehouse, Users, ArrowRightLeft,
   Shield, Settings, FileText, Upload, ClipboardList, Activity, LogOut,
   Menu, X, ChevronDown, Bell, Search, BarChart3, ShoppingCart
 } from 'lucide-react';
@@ -41,7 +41,7 @@ export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(setUser).catch(() => { });
   }, []);
 
   const handleLogout = () => {
@@ -52,7 +52,7 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen bg-slate-50">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -86,8 +86,8 @@ export default function Layout({ children, currentPageName }) {
                 onClick={() => setSidebarOpen(false)}
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                  ${isActive 
-                    ? 'bg-blue-50 text-blue-700' 
+                  ${isActive
+                    ? 'bg-blue-50 text-blue-700'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }
                 `}

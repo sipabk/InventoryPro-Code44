@@ -28,7 +28,7 @@ export default function LowStockAlerts({ products, categories }) {
     const stock = product.quantity_in_stock || 0;
     const reorderLevel = product.reorder_level || 1;
     const ratio = stock / reorderLevel;
-    
+
     if (stock === 0) return { level: 'Out of Stock', color: 'bg-red-100 text-red-700' };
     if (ratio <= 0.25) return { level: 'Critical', color: 'bg-red-100 text-red-700' };
     if (ratio <= 0.5) return { level: 'Very Low', color: 'bg-orange-100 text-orange-700' };

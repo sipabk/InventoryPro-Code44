@@ -50,8 +50,8 @@ export default function ScheduledReportsManager() {
     { header: 'Report Name', accessor: (row) => getField(row, 'report_name') },
     { header: 'Type', accessor: (row) => (getField(row, 'report_type') || '').replace('_', ' ') },
     { header: 'Frequency', accessor: (row) => getField(row, 'frequency') },
-    { 
-      header: 'Recipients', 
+    {
+      header: 'Recipients',
       cell: (row) => (
         <div className="flex items-center gap-1">
           <Mail className="w-4 h-4" />
@@ -72,8 +72,8 @@ export default function ScheduledReportsManager() {
       header: 'Actions',
       cell: (row) => (
         <div className="flex gap-2">
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             variant="outline"
             onClick={(e) => {
               e.stopPropagation();
@@ -84,8 +84,8 @@ export default function ScheduledReportsManager() {
           >
             {getField(row, 'status') === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             variant="outline"
             onClick={(e) => { e.stopPropagation(); setDeletingReport(row); }}
           >
@@ -135,7 +135,7 @@ export default function ScheduledReportsManager() {
         onClose={() => setDeletingReport(null)}
         onConfirm={() => deleteMutation.mutate(deletingReport.id)}
         title="Delete Scheduled Report"
-        description={`Are you sure you want to delete "${getField(deletingReport, 'report_name')}"?`}
+        description={`Are you sure you want to delete "${deletingReport ? getField(deletingReport, 'report_name') : ''}"?`}
         isLoading={deleteMutation.isPending}
       />
     </div>

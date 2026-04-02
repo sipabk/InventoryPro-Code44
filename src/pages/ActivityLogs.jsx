@@ -41,8 +41,8 @@ export default function ActivityLogs() {
   });
 
   const columns = [
-    { 
-      header: 'Action', 
+    {
+      header: 'Action',
       cell: (row) => {
         const Icon = actionIcons[row.action] || Activity;
         return (
@@ -59,8 +59,8 @@ export default function ActivityLogs() {
     { header: 'Entity', accessor: 'entity_type' },
     { header: 'Item', accessor: 'entity_name', cellClassName: 'max-w-48 truncate' },
     { header: 'Details', accessor: 'details', cellClassName: 'max-w-64 truncate' },
-    { 
-      header: 'Time', 
+    {
+      header: 'Time',
       accessor: (row) => row.created_date ? format(new Date(row.created_date), 'MMM d, yyyy HH:mm') : '-'
     },
   ];
@@ -75,10 +75,10 @@ export default function ActivityLogs() {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <DataTable 
-          data={logs} 
-          columns={columns} 
-          searchPlaceholder="Search logs..." 
+        <DataTable
+          data={logs}
+          columns={columns}
+          searchPlaceholder="Search logs..."
           emptyMessage="No activity logs found"
           pageSize={25}
         />

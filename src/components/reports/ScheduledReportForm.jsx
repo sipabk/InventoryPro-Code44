@@ -154,8 +154,8 @@ export default function ScheduledReportForm({ report, onClose }) {
 
           <div className="flex justify-end gap-3 pt-4">
             <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <Button 
-              onClick={() => saveMutation.mutate()} 
+            <Button
+              onClick={() => saveMutation.mutate()}
               disabled={saveMutation.isPending || !formData.report_name}
             >
               <Save className="w-4 h-4 mr-2" />
